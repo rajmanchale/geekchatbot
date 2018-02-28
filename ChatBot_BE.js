@@ -16,9 +16,9 @@ app.use(cors());
 
 const {Wit, log} = require('node-wit');
 const {interactive} = require('node-wit');
-//let uri ='mongodb://localhost:27017/sobha';
+//let uri ='mongodb://localhost:27017/db_name';
 const client = new Wit({
-  accessToken: 'YSF657EFAV2HMIUCJGHWP3MJAE2UTCXW',
+  accessToken: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   //logger: new log.Logger(log.DEBUG) // optional
 });
 
@@ -51,8 +51,8 @@ app.post('/chatbox',function(request,response)
     console.log(uip+' '+country+' '+state+' '+city+' '+session_flag+'\n');
   	mongodb.MongoClient.connect(uri,function(error,client)
   	{
-    	let db=client.db('sobha');
-    	db.collection('sobha').findOne({'User_IP':uip},function(error,result)
+    	let db=client.db('db_name');
+    	db.collection('db_name').findOne({'User_IP':uip},function(error,result)
     	{
     		if(error) throw error;
     		//Date and time
@@ -62,14 +62,14 @@ app.post('/chatbox',function(request,response)
     		//
     		if(result==null)
     		{
-    		 	db.collection('sobha').insert({'User_IP':uip,'User_info':{'Name':'','Email':'','Phone':'','City':city,'State':state,'Country':country,'Visited_count':1},'Session':{'Session_start':[ses],'Session_end':[],'Time_spent':[]},'User_Query':[]},function(err,result){
+    		 	db.collection('Collec_name').insert({'User_IP':uip,'User_info':{'Name':'','Email':'','Phone':'','City':city,'State':state,'Country':country,'Visited_count':1},'Session':{'Session_start':[ses],'Session_end':[],'Time_spent':[]},'User_Query':[]},function(err,result){
     			response.status(200).json({success:true,msg:"New user saved"});
     			});
     		}
     		else if(result)
     		{
               //console.log(ses);
-            	db.collection('sobha').update({User_IP:uip},{$inc:{'User_info.Visited_count':1},$push:{'Session.Session_start':ses}},function(err,result){
+            	db.collection('Collec_name').update({User_IP:uip},{$inc:{'User_info.Visited_count':1},$push:{'Session.Session_start':ses}},function(err,result){
                 response.status(200).json({success:true,msg:"User updated"});
             	});
     		}
@@ -101,9 +101,9 @@ app.post('/chatbox',function(request,response)
         // SAVING Data in MONGODB
         mongodb.MongoClient.connect(uri,function(error,db)
         {
-          let dbi=db.db('sobha');
+          let dbi=db.db('db_name');
           if(error){console.log("error!!!");}
-          dbi.collection('sobha').update({User_IP:uip},{$push:{User_Query:{$each:obj}}},function(error,result)
+          dbi.collection('Collec_name').update({User_IP:uip},{$push:{User_Query:{$each:obj}}},function(error,result)
           {
           	if(error) throw error;
           	if(result==null){console.log('User_Query is empty');}
@@ -131,7 +131,7 @@ app.post('/chatbox',function(request,response)
   mongodb.MongoClient.connect(uri,function(error,client)
   {
   	if(error) throw error;
-    let db=client.db('sobha');
+    let db=client.db('db_name');
     //Date and time
     let extime=new Date();
     let qtim= (extime.getHours()*3600)+(extime.getMinutes()*60)+extime.getSeconds();
@@ -139,7 +139,7 @@ app.post('/chatbox',function(request,response)
     console.log(initime+' '+qtim+' '+tdiff+'\n'+typeof(initime)+' '+typeof(qtim)+' '+typeof(tdiff));
     let exx=extime.getHours()+':'+extime.getMinutes()+':'+extime.getSeconds()+" "+extime.getDate()+"/"+(extime.getMonth()+1)+"/"+extime.getFullYear();
     //
-    db.collection('sobha').update({User_IP:uip},{$set:{'User_info.Name':name,'User_info.Email':email,'User_info.Phone':phone},$push:{'Session.Session_end':exx,'Session.Time_spent':tdiff}},function(err,result){
+    db.collection('Collec_name').update({User_IP:uip},{$set:{'User_info.Name':name,'User_info.Email':email,'User_info.Phone':phone},$push:{'Session.Session_end':exx,'Session.Time_spent':tdiff}},function(err,result){
     	if(err) throw err;
     	console.log('Final Update done:'+'\t'+result);
      });
